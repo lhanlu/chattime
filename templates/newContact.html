@@ -1,0 +1,20 @@
+<html>
+<body>
+<h1> New Contact </h1>
+
+<form action="{{url_for('newContact', user_id=user_id)}}" method = 'POST'>
+
+<p>Name:</p>
+
+<input type='text' size='80' name='name' placeholder="name" required>
+
+<input type='text' size='80' name='email' placeholder="email" required>
+
+<input type='submit' value='Create'>
+
+<a href = "{{ url_for('contact', user_id = user_id)}}"> Cancel </a>
+
+</form>
+
+</body>
+</html>

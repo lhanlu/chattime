@@ -1,0 +1,61 @@
+<html>
+
+<head>
+    <link rel=styleshhet type=text/css href="{{url_for('static',filename='style.css')}}">
+    </head>
+
+<body>
+
+<div class = 'pane'>
+    <div class = 'header'>
+    <h1>{{  user.name  }}</h1>
+</div>
+
+<a href='{{url_for('newContact', user_id = user.id) }}'>New Contact</a>
+
+<div class = 'flash'>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+<ul>
+{% for message in messages %}
+<li><strong>{{message}}</strong></li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+</div>
+
+
+{% for c in contacts %}
+
+<div class = 'id'>
+	<p>{{c.id}}</p>
+</div>
+<div class = 'nameAndEmal'>
+    <span class = 'name'><p>{{c.name}}</p></span>
+    <span class = 'email'>
+
+
+	<p>{{c.email}} </p>
+	</span>
+	</div>
+
+
+	
+	<div class = "editdeletepane">
+<a href='{{url_for('editContact', user_id = user.id, contact_id = c.id) }}'>Edit</a>
+
+</br>
+<a href = '{{url_for('deleteContact', user_id = user.id, contact_id = c.id ) }}'>Delete</a>
+
+</div>
+
+
+{% endfor %}
+</div>
+</div>
+</body>
+
+</html>

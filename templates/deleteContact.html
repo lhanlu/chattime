@@ -1,0 +1,16 @@
+<html>
+
+<body>
+<h1> Are you sure you want to delete {{contact.name}}? </h1>
+
+<form action="{{ url_for('deleteContact', user_id=contact.user_id, contact_id=contact.id)}}" method = 'post'>
+
+<input type='submit', value = 'Delete'>
+
+
+</form>
+
+<a href = "{{ url_for('contact', user_id = contact.user_id)}}"> Cancel </a>
+</body>
+
+</html>
