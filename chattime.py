@@ -9,7 +9,7 @@ from flask import (
 )
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import User, Contact, Message
+from database_setup import User, Contact, Message, Base
 
 import random
 import string
@@ -31,9 +31,9 @@ session = DBSession()
 
 @app.route('/')
 @app.route('/users/')
-def restaurants():
+def users():
     session = DBSession()
-    restaurants = session.query(User).all()
+    users = session.query(User).all()
     return render_template('users.html', users=users)
 
 
@@ -96,7 +96,7 @@ def newContact(user_id):
     session = DBSession()
     if request.method == 'POST':
         newContact = Contact(name=request.form['name'],
-                            id=request.form['email'],
+                            email=request.form['email'],
                             user_id=user_id)
         session.add(newContact)
         session.commit()
@@ -117,7 +117,7 @@ def editUser(user_id):
     Returns:
         if the user infomation is edited successfully,
             return to user page and show message: User was edited!
-        else return to editUser page and show no message.
+        else return to editUser page and show no message.b
     """
     session = DBSession()
     editedUser = session.query(User).filter_by(id=user_id).one()
@@ -157,7 +157,7 @@ def editContact(user_id, contact_id):
         else return to contact page and show no message.
     """
     session = DBSession()
-    editedCon = session.query(Contact).filter_by(id=contact_id).one()
+    editedCon = session.query(Contact).filter_by(email=contact_id).one()
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name=request.form['name']
@@ -194,7 +194,7 @@ def deleteUser(user_id):
         return redirect(url_for('users'))
     else:
         return render_template('deleteUser.html',
-                    restaurant=deletedUser)
+                    user=deletedUser)
 
 
 
@@ -220,7 +220,7 @@ def deleteContact(user_id, contact_id):
         else return to contact page and show no message.
     """
     session = DBSession()
-    deletedCon = session.query(Contact).filter_by(id=contact_id).one()
+    deletedCon = session.query(Contact).filter_by(email=contact_id).one()
     if request.method == 'POST':
         session.delete(deletedCon)
         session.commit()
@@ -229,10 +229,11 @@ def deleteContact(user_id, contact_id):
                         user_id=user_id))
     else:
         return render_template('deleteContact.html', contact=deletedCon)
-s
+
 
 
 
 if __name__ == '__main__':
+    app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host = '0.0.0.0', port = 5000)
