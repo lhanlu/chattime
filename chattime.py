@@ -38,6 +38,7 @@ def restaurants():
 
 
 @app.route('/users/<int:user_id>/contact')
+@app.route('/users/<int:user_id>/')
 @app.route('/<int:user_id>/')
 def contact(user_id):
     """
@@ -95,7 +96,7 @@ def newContact(user_id):
     session = DBSession()
     if request.method == 'POST':
         newContact = Contact(name=request.form['name'],
-                            email=request.form['email'],
+                            id=request.form['email'],
                             user_id=user_id)
         session.add(newContact)
         session.commit()
@@ -134,113 +135,104 @@ def editUser(user_id):
 
 
 
-@app.route('/restaurant/<int:restaurant_id>/<int:menu_id>/edit/', 
+@app.route('/<int:user_id>/<string:contact_id>/edit/',
         methods=['GET','POST'])
-def editMenuItem(restaurant_id, menu_id):
+@app.route('/users/<int:user_id>/<string:contact_id>/edit/',
+        methods=['GET','POST'])
+@app.route('/<int:user_id>/contact/<string:contact_id>/edit/',
+        methods=['GET','POST'])
+@app.route('/users/<int:user_id>/contact/<string:contact_id>/edit/',
+        methods=['GET','POST'])
+def editContact(user_id, contact_id):
     """
-   This is a function to add new menu item
+   This is a function to edit contact
     Args:
-        restaurant_id (data type: Integer): 
-                    the restaurant id that menu belongs to 
-        menu-id(data type: Integer):
-                    the menu id
+        user_id (data type: Integer):
+                    the user id that contact belongs to
+        contact_id(data type: Integer):
+                    the contact id
     Returns:
-        if the menu item is edited successfully, 
-            return to restaurant menu page and show message:menu item was edited!
-        else return to restaurant menu page and show no message.
+        if the contact item is edited successfully,
+            return to contact page and show message:contact was edited!
+        else return to contact page and show no message.
     """
     session = DBSession()
-    if 'username' not in login_session:
-        return redirect('/login')
-    editedItem = session.query(MenuItem).filter_by(id=menu_id).one()
-    if editedItem.user_id == login_session['user_id']:
-        if request.method == 'POST':
-            if request.form['name']:
-                editedItem.name=request.form['name']
-            if request.form['description']:
-                editedItem.description=request.form['description']
-            if request.form['price']:
-                editedItem.price = request.form['price']
-            if request.form['course']:
-                editedItem.course = request.form['course']
-            session.add(editedItem)
-            session.commit()
-            flash("Menu item was edited!")
-            return redirect(url_for('restaurantMenu', 
-                        restaurant_id=restaurant_id))
-        else:
-            return render_template('editmenuitem.html', 
-                                    restaurant_id=restaurant_id, 
-                                    menu_id=menu_id, item=editedItem)
+    editedCon = session.query(Contact).filter_by(id=contact_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            editedItem.name=request.form['name']
+        session.add(editedCon)
+        session.commit()
+        flash("Contact was edited!")
+        return redirect(url_for('contact',
+                    user_id=user_id))
     else:
-        flash("You are not allowed to edit this menu item.")
-        return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
+        return render_template('editContact.html',
+                                user_id=user_id,
+                                contact_id=contact_id, contact=editedCon)
 
 
-@app.route('/restaurant/<int:restaurant_id>/delete/', methods=['GET','POST'])
-def deleteRestaurant(restaurant_id):
+@app.route('/<int:user_id>/delete/', methods=['GET','POST'])
+@app.route('/users/<int:user_id>/delete/', methods=['GET','POST'])
+def deleteUser(user_id):
     """
-   This is a function to add new menu item
+   This is a function to delete user
     Args:
-        restaurant_id (data type: Integer): 
-                    the restaurant id
+        user_id (data type: Integer):
+                    the user id
     Returns:
-        if the restaurant is deleted successfully, 
-            return to restaurant page and show message:Restaurant was deleted!
-        else return to restaurant page and show no message.
+        if the user is deleted successfully,
+            return to user page and show message:User was deleted!
+        else return to user page and show no message.
     """
     session = DBSession()
-    if 'username' not in login_session:
-        return redirect('/login')
-    deletedRes = session.query(Restaurant).filter_by(id=restaurant_id).one()
-    if deletedRes.user_id == login_session['user_id']:
-        if request.method == 'POST':
-            session.delete(deletedRes)
-            session.commit()
-            flash("Restaurant was deleted!")
-            return redirect(url_for('restaurants'))
-        else:
-            return render_template('deleteRestaurant.html', 
-                        restaurant=deletedRes)
+    deletedUser = session.query(User).filter_by(id=user_id).one()
+    if request.method == 'POST':
+        session.delete(deletedUser)
+        session.commit()
+        flash("User was deleted!")
+        return redirect(url_for('users'))
     else:
-        flash("You are not allowed to delete this restaurant.")
-        return redirect(url_for('restaurants'))
+        return render_template('deleteUser.html',
+                    restaurant=deletedUser)
 
 
-@app.route('/restaurant/<int:restaurant_id>/<int:menu_id>/delete/', 
+
+@app.route('/<int:user_id>/<string:contact_id>/delete/',
+methods=['GET','POST'])
+@app.route('/users/<int:user_id>/<string:contact_id>/delete/',
+        methods=['GET','POST'])
+@app.route('/<int:user_id>/contact/<string:contact_id>/delete/',
+        methods=['GET','POST'])
+@app.route('/users/<int:user_id>/contact/<string:contact_id>/delete/',
             methods=['GET','POST'])
-def deleteMenuItem(restaurant_id, menu_id):
+def deleteContact(user_id, contact_id):
     """
-   This is a function to add new menu item
+   This is a function to delete contact
     Args:
-        restaurant_id (data type: Integer): 
-                    the restaurant id that menu belongs to
-        menu_id(data type: Integer):
-                    the menu id 
+        user_id (data type: Integer):
+                    the user id that contact belongs to
+        contact_id(data type: Integer):
+                    the contact id
     Returns:
-        if the menu item is deleted successfully, 
-            return to restaurant menu page and show message:menu item was deleted!
-        else return to restaurant menu page and show no message.
+        if the contact is deleted successfully,
+            return to contact page and show message:contact was deleted!
+        else return to contact page and show no message.
     """
     session = DBSession()
-    if 'username' not in login_session:
-        return redirect('/login')
-    deletedItem = session.query(MenuItem).filter_by(id=menu_id).one()
-    if deletedItem.user_id == login_session['user_id']:
-        if request.method == 'POST':
-            session.delete(deletedItem)
-            session.commit()
-            flash("Menu item was deleted!")
-            return redirect(url_for('restaurantMenu', 
-                            restaurant_id=restaurant_id))
-        else:
-            return render_template('deletemenuitem.html', item=deletedItem)
+    deletedCon = session.query(Contact).filter_by(id=contact_id).one()
+    if request.method == 'POST':
+        session.delete(deletedCon)
+        session.commit()
+        flash("Contact was deleted!")
+        return redirect(url_for('contact',
+                        user_id=user_id))
     else:
-        flash("You are not allowed to delete this menu item.")
-        return redirect(url_for('restaurantMenu', 
-                                restaurant_id=restaurant_id))
+        return render_template('deleteContact.html', contact=deletedCon)
+s
+
+
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host = '0.0.0.0', port = 5000)

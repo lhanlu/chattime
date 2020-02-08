@@ -46,9 +46,8 @@ class Contact(Base):
 
     __tablename__ = 'contact'
 
-    id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
-    email = Column(String(250), nullable=False)
+    email = Column(String(250), primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -56,7 +55,6 @@ class Contact(Base):
     def serialize(self):
         return{
             'name': self.name,
-            'id': self.id,
             'email': self.email,
         }
 

@@ -1,16 +1,12 @@
 <html>
 <body>
-<h1> Edit Menu Item </h1>
+<h1> Edit Contact </h1>
 
-<form action="{{url_for('editMenuItem', restaurant_id=restaurant_id, menu_id=item.id)}}" method = 'POST'>
+<form action="{{url_for('editContact', user_id=contact.user_id, contact_id=contact.id)}}" method = 'POST'>
 
-<p>{{item.name}}:</p>
+<p>{{contact.name}}:</p>
 
-<input type='text' size='30' name='id' placeholder = '{{contact.id}}'>
-</br>
 <input type='text' size='30' name='name' placeholder = '{{contact.name}}'>
-</br>
-<input type='text' size='30' name='email' placeholder = '{{contact.email}}'>
 </br>
 
 <input type='submit' value='Edit'>
