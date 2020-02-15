@@ -200,13 +200,13 @@ def deleteUser(user_id):
 
 
 
-@app.route('/<int:user_id>/<string:contact_id>/delete/',
+@app.route('/<int:user_id>/<int:contact_id>/delete/',
 methods=['GET','POST'])
-@app.route('/users/<int:user_id>/<string:contact_id>/delete/',
+@app.route('/users/<int:user_id>/<int:contact_id>/delete/',
         methods=['GET','POST'])
-@app.route('/<int:user_id>/contact/<string:contact_id>/delete/',
+@app.route('/<int:user_id>/contact/<int:contact_id>/delete/',
         methods=['GET','POST'])
-@app.route('/users/<int:user_id>/contact/<string:contact_id>/delete/',
+@app.route('/users/<int:user_id>/contact/<int:contact_id>/delete/',
             methods=['GET','POST'])
 def deleteContact(user_id, contact_id):
     """
@@ -222,7 +222,7 @@ def deleteContact(user_id, contact_id):
         else return to contact page and show no message.
     """
     session = DBSession()
-    deletedCon = session.query(Contact).filter_by(email=contact_id).one()
+    deletedCon = session.query(Contact).filter_by(id=contact_id).one()
     if request.method == 'POST':
         session.delete(deletedCon)
         session.commit()
