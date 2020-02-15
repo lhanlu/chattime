@@ -41,10 +41,17 @@
 	</span>
 	</div>
 
+{% endfor %}
 
-	
+{% for rm in r_messages %}
 
-
+<div class = 'content'>
+    <span class = 'sender'><p>Sender: {{rm.user.name}}</p></span>
+    <span class = 'receiver'><p>Receiver:{{rm.contact.name}} </p>
+    <span class = 'content'><p>Content:{{rm.content}}</p></span>
+    <span class = 'time'><p>Time:{{rm.time}} </p>
+	</span>
+	</div>
 
 {% endfor %}
 </div>

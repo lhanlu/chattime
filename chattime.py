@@ -253,12 +253,12 @@ def message(user_id, contact_id):
     user = session.query(User).filter_by(id=user_id).one()
     contact = session.query(Contact).filter_by(id = contact_id, user_id = user_id).one()
     messages = session.query(Message).filter_by(contact_id=contact_id, user_id=user_id)
-    
-    if messages is None:
+    r_messages = session.query(Message).filter_by(user_id=contact_id, contact_id=user_id)
+    if messages and r_messages is None:
         return "You currently have no messages with this contact"
     else:
         return render_template('message.html', user=user,
-                        contact = contact, messages=messages)
+                        contact = contact, messages=messages, r_messages = r_messages)
 
 
 @app.route('/<int:user_id>/<int:contact_id>/message/new/', methods=['GET','POST'])
