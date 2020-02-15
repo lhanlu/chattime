@@ -30,6 +30,30 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+@app.route('/JSON')
+@app.route('/users/JSON')
+def userJSON():
+    session = DBSession()
+    users = session.query(User).all()
+    return jsonify(User=[u.serialize for u in users])
+
+
+@app.route('/users/<int:user_id>/contact/JSON')
+@app.route('/<int:user_id>/contact/JSON')
+def contactJSON(user_id):
+    session = DBSession()
+    user = session.query(User).filter_by(id=user_id).one()
+    contacts = session.query(Contact).filter_by(user_id=user.id).all()
+    return jsonify(Contact=[c.serialize for c in contacts])
+
+@app.route('/<int:user_id>/contact/<int:contact_id>/JSON')
+@app.route('/users/<int:user_id>/<int:contact_id>/JSON')
+@app.route('/users/<int:user_id>/contact/<int:contact_id>/JSON')
+def messageJSON(user_id,contact_id):
+    session = DBSession()
+    messages = session.query(Message).filter_by(user_id=user_id, contact_id=contact_id).all()
+    return jsonify(Message=[m.serialize for m in messages])
+
 
 @app.route('/')
 @app.route('/users/')

@@ -14,7 +14,13 @@ class User(Base):
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
 
-
+    @property
+    def serialize(self):
+        return{
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+        }
 
 class Contact(Base):
 
@@ -26,6 +32,14 @@ class Contact(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
+    @property
+    def serialize(self):
+        return{
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'belong_to': self.user.name,
+        }
 
 
 class Message(Base):
@@ -39,6 +53,16 @@ class Message(Base):
     user = relationship(User)
     contact_id = Column(Integer, ForeignKey('contact.id'))
     contact = relationship(Contact)
+    
+    @property
+    def serialize(self):
+        return{
+            'id': self.id,
+            'content': self.content,
+            'time': self.time,
+            'sender': self.user.name,
+            'receiver': self.contact.name,
+        }
 
 
 
