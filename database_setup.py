@@ -31,6 +31,10 @@ class Message(Base):
     receiver = Column(Integer, nullable=False)
     content = Column(String(250), nullable=False)
     time = Column(String(250), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
+    contact_id = Column(Integer, ForeignKey('contact.id'))
+    contact = relationship(Contact)
 
     @property
     def serialize(self):
@@ -46,10 +50,12 @@ class Contact(Base):
 
     __tablename__ = 'contact'
 
+    id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
-    email = Column(String(250), primary_key=True)
+    email = Column(String(250), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    
 
     @property
     def serialize(self):
