@@ -160,9 +160,9 @@ def editContact(user_id, contact_id):
     editedCon = session.query(Contact).filter_by(id=contact_id).one()
     if request.method == 'POST':
         if request.form['name']:
-            editedItem.name=request.form['name']
+            editedCon.name=request.form['name']
         if request.form['email']:
-        editedItem.name=request.form['email']
+            editedCon.name=request.form['email']
         session.add(editedCon)
         session.commit()
         flash("Contact was edited!")
