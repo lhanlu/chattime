@@ -19,6 +19,8 @@ import json
 from flask import make_response
 import requests
 
+from datetime import datetime
+
 
 app = Flask(__name__)
 
@@ -232,7 +234,63 @@ def deleteContact(user_id, contact_id):
     else:
         return render_template('deleteContact.html', contact=deletedCon)
 
+@app.route('/<int:user_id>/<int:contact_id>/message/')
+@app.route('/<int:user_id>/contact/<int:contact_id>/message/')
+@app.route('/users/<int:user_id>/<int:contact_id>/message/new/')
+@app.route('/users/<int:user_id>/contact/<int:contact_id>/message/')
+def message(user_id, contact_id):
+    """
+   This is a function to show message
+    Args:
+        user_id (data type: Integer):
+                    the user id those contacts belongs to
+        contact_id (data type: Integer):
+                    the contact id that contacts belongs to
+    Returns:
+     Message page
+    """
+    session = DBSession()
+    user = session.query(User).filter_by(id=user_id).one()
+    contact = session.query(Contact).filter_by(id = contact_id, user_id = user_id).one()
+    messages = session.query(Message).filter_by(contact_id=contact_id, user_id=user_id)
+    
+    if messages is None:
+        return "You currently have no messages with this contact"
+    else:
+        return render_template('message.html', user=user,
+                        contact = contact, messages=messages)
 
+
+@app.route('/<int:user_id>/<int:contact_id>/message/new/', methods=['GET','POST'])
+@app.route('/<int:user_id>/contact/<int:contact_id>/message/new/', methods=['GET','POST'])
+@app.route('/users/<int:user_id>/<int:contact_id>/message/new/', methods=['GET','POST'])
+@app.route('/users/<int:user_id>/contact/<int:contact_id>/message/new/', methods=['GET','POST'])
+def sendMessage(user_id, contact_id):
+    """
+   This is a function to send message
+    Args:
+        user_id (data type: Integer):
+                    the user id that user belongs to
+        contact_id (data type: Integer):
+                    the contact id that contact belongs to
+    Returns:
+            return to message page and show all the message
+        else return to contact page and show no message.
+    """
+    session = DBSession()
+    if request.method == 'POST':
+        newMessage = Message(content=request.form['content'],
+                            time=datetime.now(),
+                            contact_id = contact_id,
+                            user_id=user_id,)
+        session.add(newMessage)
+        session.commit()
+        flash("Message sent!")
+        return redirect(url_for('message', user_id = user_id, contact_id = contact_id))
+    else:
+        return render_template('sendMessage.html', user_id = user_id, contact_id = contact_id)
+
+    
 
 
 if __name__ == '__main__':

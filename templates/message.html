@@ -1,0 +1,54 @@
+<html>
+
+
+
+<body>
+    
+<div class = 'pane'>
+    <div class = 'header'>
+    <h1>{{  contact.name  }}</h1>
+</div>
+
+<a href='{{url_for('sendMessage', user_id = user.id, contact_id = contact.id) }}'>Send Message</a>
+
+<div class = 'flash'>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+<ul>
+{% for message in messages %}
+<li><strong>{{message}}</strong></li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+</div>
+
+<a href='{{url_for('users') }}'>User Page</a>
+<br>
+<a href='{{url_for('contact', user_id = user.id) }}'>Contact Page</a>
+
+
+{% for m in messages %}
+
+
+<div class = 'content'>
+    <span class = 'sender'><p>Sender: {{m.user.name}}</p></span>
+    <span class = 'receiver'><p>Receiver:{{m.contact.name}} </p>
+    <span class = 'content'><p>Content:{{m.content}}</p></span>
+    <span class = 'time'><p>Time:{{m.time}} </p>
+	</span>
+	</div>
+
+
+	
+
+
+
+{% endfor %}
+</div>
+</div>
+</body>
+
+</html>

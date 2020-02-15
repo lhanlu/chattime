@@ -1,11 +1,9 @@
 <html>
 
-<head>
-    <link rel=styleshhet type=text/css href="{{url_for('static',filename='style.css')}}">
-    </head>
+
 
 <body>
-
+    
 <div class = 'pane'>
     <div class = 'header'>
     <h1>{{  user.name  }}</h1>
@@ -26,6 +24,8 @@
 {% endwith %}
 
 </div>
+
+<a href='{{url_for('users') }}'>User Page</a>
 
 
 {% for c in contacts %}
@@ -49,6 +49,8 @@
 
 </br>
 <a href = '{{url_for('deleteContact', user_id = user.id, contact_id = c.id ) }}'>Delete</a>
+</br>
+<a href = '{{url_for('message', user_id = user.id, contact_id = c.id ) }}'>Message</a>
 
 </div>
 
