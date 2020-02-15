@@ -22,6 +22,26 @@ class User(Base):
             'email': self.email,
         }
 
+
+class Contact(Base):
+
+__tablename__ = 'contact'
+
+id = Column(Integer, primary_key=True)
+name = Column(String(80), nullable=False)
+email = Column(String(250), nullable=False)
+user_id = Column(Integer, ForeignKey('user.id'))
+user = relationship(User)
+
+
+@property
+def serialize(self):
+    return{
+        'name': self.name,
+        'email': self.email,
+    }
+    
+
 class Message(Base):
 
     __tablename__ = 'message'
@@ -45,24 +65,6 @@ class Message(Base):
             'time': self.time,
         }
 
-
-class Contact(Base):
-
-    __tablename__ = 'contact'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(80), nullable=False)
-    email = Column(String(250), nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
-    
-
-    @property
-    def serialize(self):
-        return{
-            'name': self.name,
-            'email': self.email,
-        }
 
 ### insert at end of file ###
 
