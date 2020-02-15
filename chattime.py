@@ -12,11 +12,13 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import User, Contact, Message, Base
 
 import random
+import bottle
 import string
-
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import httplib2
 import json
 from flask import make_response
+from flask import Response
 import requests
 
 from datetime import datetime
@@ -97,13 +99,16 @@ def newUser():
     """
     session = DBSession()
     if request.method == 'POST':
-        newUser = User(name=request.form['name'],email=request.form['email'])
+        req_data = request.get_json()
+        newUser = User(name=req_data['name'],email=req_data['email'])
         session.add(newUser)
         session.commit()
         flash('New User %s created!' % newUser.name)
-        return redirect(url_for('users'))
+        """return redirect(url_for('users'))"""
+        return Response("create user successfully with status = 200", status=200, mimetype='text/plain')
     else:
-        return render_template('newUser.html')
+        """return render_template('newUser.html')"""
+        return Response("fail to create user successfully with status = 400", status=400, mimetype='text/plain')
 
 @app.route('/<int:user_id>/new/', methods=['GET','POST'])
 @app.route('/<int:user_id>/contact/new/', methods=['GET','POST'])
@@ -121,19 +126,22 @@ def newContact(user_id):
     """
     session = DBSession()
     if request.method == 'POST':
-        newContact = Contact(name=request.form['name'],
-                            email=request.form['email'],
+        req_data = request.get_json()
+        newContact = Contact(name=req_data['name'],
+                            email=req_data['email'],
                             user_id=user_id)
         session.add(newContact)
         session.commit()
         flash("New contact created!")
-        return redirect(url_for('contact', user_id = user_id))
+        """return redirect(url_for('contact', user_id = user_id))"""
+        return Response("create contact successfully with status = 200", status=200, mimetype='text/plain')
     else:
-        return render_template('newContact.html', user_id = user_id)
+        """return render_template('newContact.html', user_id = user_id)"""
+        return Response("fail to create contact successfully with status = 400", status=400, mimetype='text/plain')
 
 
-@app.route('/<int:user_id>/edit/', methods=['GET','POST'])
-@app.route('/users/<int:user_id>/edit/', methods=['GET','POST'])
+@app.route('/<int:user_id>/edit/', methods=['GET','PUT'])
+@app.route('/users/<int:user_id>/edit/', methods=['GET','PUT'])
 def editUser(user_id):
     """
    This is a function to edit exited user
@@ -147,28 +155,32 @@ def editUser(user_id):
     """
     session = DBSession()
     editedUser = session.query(User).filter_by(id=user_id).one()
-    if request.method == 'POST':
-        if request.form['name']:
-            editedUser.name = request.form['name']
-        if request.form['email']:
-            editedUser.name = request.form['email']
+    if request.method == 'PUT':
+        req_data = request.get_json()
+        """if request.form['name']:"""
+        if req_data['name']:
+            editedUser.name = req_data['name']
+        """if request.form['email']:"""
+        if req_data['email']:
+            editedUser.name = req_data['email']
         session.add(editedUser)
         session.commit()
         flash("User was edited!")
-        return redirect(url_for('users'))
+        """return redirect(url_for('users'))"""
+        return Response("edit user successfully with status = 200", status=200, mimetype='text/plain')
     else:
-        return render_template('editUser.html', user=editedUser)
+         return Response("fail to edit user successfully with status = 400", status=400, mimetype='text/plain')
 
 
 
 @app.route('/<int:user_id>/<int:contact_id>/edit/',
-        methods=['GET','POST'])
+        methods=['GET','PUT'])
 @app.route('/users/<int:user_id>/<int:contact_id>/edit/',
-        methods=['GET','POST'])
+        methods=['GET','PUT'])
 @app.route('/<int:user_id>/contact/<int:contact_id>/edit/',
-        methods=['GET','POST'])
+        methods=['GET','PUT'])
 @app.route('/users/<int:user_id>/contact/<int:contact_id>/edit/',
-        methods=['GET','POST'])
+        methods=['GET','PUT'])
 def editContact(user_id, contact_id):
     """
    This is a function to edit contact
@@ -184,24 +196,30 @@ def editContact(user_id, contact_id):
     """
     session = DBSession()
     editedCon = session.query(Contact).filter_by(id=contact_id).one()
-    if request.method == 'POST':
-        if request.form['name']:
-            editedCon.name=request.form['name']
-        if request.form['email']:
-            editedCon.name=request.form['email']
+    if request.method == 'PUT':
+        req_data = request.get_json()
+        """if request.form['name']:"""
+        if req_data['name']:
+            editedCon.name=req_data['name']
+        """if request.form['email']:"""
+        if req_data['email']:
+            editedCon.name=req_data['email']
         session.add(editedCon)
         session.commit()
         flash("Contact was edited!")
-        return redirect(url_for('contact',
-                    user_id=user_id))
+        """return redirect(url_for('contact',
+                    user_id=user_id))"""
+        return Response("edit contact successfully with status = 200", status=200, mimetype='text/plain')
     else:
-        return render_template('editContact.html',
+        """return render_template('editContact.html',
                                 user_id=user_id,
-                                contact_id=contact_id, contact=editedCon)
+                                contact_id=contact_id, contact=editedCon)"""
+        return Response("fail to edit contact successfully with status = 400", status=400, mimetype='text/plain')
+                                
 
 
-@app.route('/<int:user_id>/delete/', methods=['GET','POST'])
-@app.route('/users/<int:user_id>/delete/', methods=['GET','POST'])
+@app.route('/<int:user_id>/delete/', methods=['DELETE'])
+@app.route('/users/<int:user_id>/delete/', methods=['DELETE'])
 def deleteUser(user_id):
     """
    This is a function to delete user
@@ -215,25 +233,29 @@ def deleteUser(user_id):
     """
     session = DBSession()
     deletedUser = session.query(User).filter_by(id=user_id).one()
-    if request.method == 'POST':
+    if request.method == 'DELETE':
         session.delete(deletedUser)
         session.commit()
         flash("User was deleted!")
-        return redirect(url_for('users'))
+        """return redirect(url_for('users'))"""
+    
+        return Response("delete user successfully with status = 200", status=200, mimetype='text/plain')
+        """HttpResponse("status code = 200", content_type='text/plain')"""
     else:
-        return render_template('deleteUser.html',
-                    user=deletedUser)
+        """return render_template('deleteUser.html',
+                    user=deletedUser)"""
+        return  Response("fail to delete user with status = 400", status=400, mimetype='text/plain')
 
 
 
 @app.route('/<int:user_id>/<int:contact_id>/delete/',
-methods=['GET','POST'])
+methods=['DELETE'])
 @app.route('/users/<int:user_id>/<int:contact_id>/delete/',
-        methods=['GET','POST'])
+        methods=['DELETE'])
 @app.route('/<int:user_id>/contact/<int:contact_id>/delete/',
-        methods=['GET','POST'])
+        methods=['DELETE'])
 @app.route('/users/<int:user_id>/contact/<int:contact_id>/delete/',
-            methods=['GET','POST'])
+            methods=['DELETE'])
 def deleteContact(user_id, contact_id):
     """
    This is a function to delete contact
@@ -249,19 +271,20 @@ def deleteContact(user_id, contact_id):
     """
     session = DBSession()
     deletedCon = session.query(Contact).filter_by(id=contact_id).one()
-    if request.method == 'POST':
+    if request.method == 'DELETE':
         session.delete(deletedCon)
         session.commit()
         flash("Contact was deleted!")
-        return redirect(url_for('contact',
-                        user_id=user_id))
+        """return redirect(url_for('contact',
+                        user_id=user_id))"""
+        return Response("delete Contact successfully with status = 200", status=200, mimetype='text/plain')
     else:
-        return render_template('deleteContact.html', contact=deletedCon)
+        return Response("fail to delete contact with status = 400", status=400, mimetype='text/plain')
 
-@app.route('/<int:user_id>/<int:contact_id>/message/')
-@app.route('/<int:user_id>/contact/<int:contact_id>/message/')
-@app.route('/users/<int:user_id>/<int:contact_id>/message/new/')
-@app.route('/users/<int:user_id>/contact/<int:contact_id>/message/')
+@app.route('/<int:user_id>/<int:contact_id>/message/', methods=['GET'])
+@app.route('/<int:user_id>/contact/<int:contact_id>/message/', methods=['GET'])
+@app.route('/users/<int:user_id>/<int:contact_id>/message/new/', methods=['GET'])
+@app.route('/users/<int:user_id>/contact/<int:contact_id>/message/', methods=['GET'])
 def message(user_id, contact_id):
     """
    This is a function to show message
@@ -285,10 +308,10 @@ def message(user_id, contact_id):
                         contact = contact, messages=messages, r_messages = r_messages)
 
 
-@app.route('/<int:user_id>/<int:contact_id>/message/new/', methods=['GET','POST'])
-@app.route('/<int:user_id>/contact/<int:contact_id>/message/new/', methods=['GET','POST'])
-@app.route('/users/<int:user_id>/<int:contact_id>/message/new/', methods=['GET','POST'])
-@app.route('/users/<int:user_id>/contact/<int:contact_id>/message/new/', methods=['GET','POST'])
+@app.route('/<int:user_id>/<int:contact_id>/message/new/', methods=['POST'])
+@app.route('/<int:user_id>/contact/<int:contact_id>/message/new/', methods=['POST'])
+@app.route('/users/<int:user_id>/<int:contact_id>/message/new/', methods=['POST'])
+@app.route('/users/<int:user_id>/contact/<int:contact_id>/message/new/', methods=['POST'])
 def sendMessage(user_id, contact_id):
     """
    This is a function to send message
