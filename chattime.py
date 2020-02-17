@@ -162,7 +162,7 @@ def editUser(user_id):
             editedUser.name = req_data['name']
         """if request.form['email']:"""
         if req_data['email']:
-            editedUser.name = req_data['email']
+            editedUser.email = req_data['email']
         session.add(editedUser)
         session.commit()
         flash("User was edited!")
@@ -203,7 +203,7 @@ def editContact(user_id, contact_id):
             editedCon.name=req_data['name']
         """if request.form['email']:"""
         if req_data['email']:
-            editedCon.name=req_data['email']
+            editedCon.email=req_data['email']
         session.add(editedCon)
         session.commit()
         flash("Contact was edited!")
